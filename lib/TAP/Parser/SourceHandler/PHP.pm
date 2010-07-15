@@ -5,7 +5,7 @@ use strict;
 
 =head1 NAME
 
-TAP::Parser::SourceHandler::PHP - The great new TAP::Parser::SourceHandler::PHP!
+TAP::Parser::SourceHandler::PHP - SourceHandler for running PHP under prove
 
 =head1 VERSION
 
@@ -54,9 +54,12 @@ Andy Lester, C<< <andy at petdance.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-tap-parser-sourcehandler-php at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=TAP-Parser-SourceHandler-PHP>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to
+C<bug-tap-parser-sourcehandler-php at rt.cpan.org>,
+or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=TAP-Parser-SourceHandler-PHP>.
+I will be notified, and then you'll automatically be notified of
+progress on your bug as I make changes.
 
 
 
@@ -66,7 +69,6 @@ automatically be notified of progress on your bug as I make changes.
 You can find documentation for this module with the perldoc command.
 
     perldoc TAP::Parser::SourceHandler::PHP
-
 
 You can also look for information at:
 
@@ -92,6 +94,11 @@ L<http://search.cpan.org/dist/TAP-Parser-SourceHandler-PHP/>
 
 
 =head1 ACKNOWLEDGEMENTS
+
+Thanks to David Wheeler for being able to steal from his pgTAP
+SourceHandler.
+
+L<http://www.justatheory.com/computers/programming/perl/tap-parser-sourcehandler.html>
 
 
 =head1 LICENSE AND COPYRIGHT
