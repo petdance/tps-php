@@ -4,6 +4,5 @@ Makefile.PL
 README
 lib/TAP/Parser/SourceHandler/PHP.pm
 t/00-load.t
-t/manifest.t
 t/pod-coverage.t
 t/pod.t
