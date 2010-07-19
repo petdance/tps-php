@@ -3,9 +3,15 @@ package TAP::Parser::SourceHandler::PHP;
 use warnings;
 use strict;
 
+use TAP::Parser::IteratorFactory   ();
+use TAP::Parser::Iterator::Process ();
+
+our @ISA = qw( TAP::Parser::SourceHandler );
+TAP::Parser::IteratorFactory->register_handler(__PACKAGE__);
+
 =head1 NAME
 
-TAP::Parser::SourceHandler::PHP - SourceHandler for running PHP under prove
+TAP::Parser::SourceHandler::PHP - Runs PHP programs to get their TAP for prove
 
 =head1 VERSION
 
@@ -15,38 +21,87 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+This module is a plugin to let you run PHP programs under F<prove>.
 
-Perhaps a little code snippet.
+  prove --source Perl \
+        --source pgTAP --pgtap-option dbname=try \
+                       --pgtap-option username=postgres \
+                       --pgtap-option suffix=.pg
 
-    use TAP::Parser::SourceHandler::PHP;
+=head1 CLASS METHODS
 
-    my $foo = TAP::Parser::SourceHandler::PHP->new();
-    ...
+=head2 $handler->can_handle( $source )
 
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
+Tells whether we should handle the file as a PHP test.
 
 =cut
 
-sub function1 {
+sub can_handle {
+    my ( $class, $source ) = @_;
+
+    my $meta = $source->meta;
+
+    return 0 unless $meta->{is_file};
+
+    my $suf = $meta->{file}{lc_ext};
+
+    my $wanted_suffix = $meta->{suffix} || '.php';
+
+    return 1 if $suf eq $wanted_suffix;
+
+    return 0;
 }
 
-=head2 function2
+=head2 C<make_iterator>
+
+    my $iterator = $class->make_iterator( $source );
+
+Returns a new iterator for the source. C<< $source->raw >> must be either
+a file name or a scalar reference to the file name.
+
+=over
+
+=item include_path
+
+Paths to include for PHP to search for files.
+
+=back
 
 =cut
 
-sub function2 {
+sub make_iterator {
+    my ( $class, $source ) = @_;
+    my $config = $source->config_for('PHP');
+
+    my @command = ( $config->{php} || '/usr/local/bin/php' );
+
+    my $include_path = $config->{include_path};
+    if ( $include_path ) {
+        push( @command, "-d$include_path" );
+    }
+
+    my $fn = ref $source->raw ? ${ $source->raw } : $source->raw;
+    push( @command, $fn );
+
+    return TAP::Parser::Iterator::Process->new( {
+        command => \@command,
+        merge   => $source->merge
+    });
 }
+
+=head1 SEE ALSO
+
+L<TAP::Object>,
+L<TAP::Parser>,
+L<TAP::Parser::IteratorFactory>,
+L<TAP::Parser::SourceHandler>,
+L<TAP::Parser::SourceHandler::Executable>,
+L<TAP::Parser::SourceHandler::Perl>,
+L<TAP::Parser::SourceHandler::File>,
+L<TAP::Parser::SourceHandler::Handle>,
+L<TAP::Parser::SourceHandler::RawTAP>
 
 =head1 AUTHOR
 
@@ -60,9 +115,6 @@ or through the web interface at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=TAP-Parser-SourceHandler-PHP>.
 I will be notified, and then you'll automatically be notified of
 progress on your bug as I make changes.
-
-
-
 
 =head1 SUPPORT
 
@@ -92,14 +144,12 @@ L<http://search.cpan.org/dist/TAP-Parser-SourceHandler-PHP/>
 
 =back
 
-
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to David Wheeler for being able to steal from his pgTAP
 SourceHandler.
 
 L<http://www.justatheory.com/computers/programming/perl/tap-parser-sourcehandler.html>
-
 
 =head1 LICENSE AND COPYRIGHT
 
