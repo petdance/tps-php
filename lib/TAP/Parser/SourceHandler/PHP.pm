@@ -26,9 +26,7 @@ our $VERSION = '0.01';
 This module is a plugin to let you run PHP programs under F<prove>.
 
   prove --source Perl \
-        --source pgTAP --pgtap-option dbname=try \
-                       --pgtap-option username=postgres \
-                       --pgtap-option suffix=.pg
+        --source PHP  --php-option include_path=/tmp/foo
 
 =head1 CLASS METHODS
 
@@ -42,14 +40,15 @@ sub can_handle {
     my ( $class, $source ) = @_;
 
     my $meta = $source->meta;
+    my $config = $source->config_for( 'PHP' );
 
     return 0 unless $meta->{is_file};
 
     my $suf = $meta->{file}{lc_ext};
 
-    my $wanted_suffix = $meta->{suffix} || '.php';
+    my $wanted_extension = $config->{extension} || '.php';
 
-    return 1 if $suf eq $wanted_suffix;
+    return 1 if $suf eq $wanted_extension;
 
     return 0;
 }
@@ -79,7 +78,7 @@ sub make_iterator {
 
     my $include_path = $config->{include_path};
     if ( $include_path ) {
-        push( @command, "-d$include_path" );
+        push( @command, "-dinclude_path=$include_path" );
     }
 
     my $fn = ref $source->raw ? ${ $source->raw } : $source->raw;
