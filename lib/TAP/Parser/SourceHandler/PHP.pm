@@ -154,7 +154,7 @@ L<http://www.justatheory.com/computers/programming/perl/tap-parser-sourcehandler
 
 Copyright 2010 Andy Lester.
 
-This program is released under the following license: artistic2
+This program is released under the Artistic License v2.0.
 
 
 =cut
